@@ -1,0 +1,49 @@
+services:
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flask-microservice
+    ports:
+      - 5000:5000
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=devops
+      - DB_PASSWORD=devopspass
+      - DB_NAME=microservice
+      - APP_VERSION=dev
+      - FLASK_ENV=development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=devops
+      - POSTGRES_PASSWORD=devopspass
+      - POSTGRES_DB=microservice
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devops -d microservice"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
