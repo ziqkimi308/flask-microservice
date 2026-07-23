@@ -1,0 +1,10 @@
+###
+curl http://localhost:5000/health
+
+###
+curl http://localhost:5000/items
+
+###
+curl -X POST http://localhost:5000/items \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test Item", "description": "Local test"}'
