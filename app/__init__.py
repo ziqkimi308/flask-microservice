@@ -3,7 +3,7 @@ from app.database import init_db
 import os
 from app.routes import bp
 
-def create_app():
+def create_app(test_config=None):
 	"""
 	- Create an instance of flask.
 	"""
@@ -25,6 +25,11 @@ def create_app():
 		}
 	)
 	app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+	# Override with test config if provided
+	if test_config:
+		app.config.update(test_config)
+
 	init_db(app)
 
 	"""
