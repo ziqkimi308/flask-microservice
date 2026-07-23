@@ -1,11 +1,5 @@
 # 🐍 Flask Microservice · Containerized · CI/CD · CloudWatch Monitoring
 
-A production-grade Flask microservice with PostgreSQL, Docker, GitHub Actions CI/CD, and custom CloudWatch monitoring.
-
-[![CI/CD Pipeline](https://github.com/ziqkimi308/flask-microservice/actions/workflows/cicd.yml/badge.svg)](https://github.com/ziqkimi308/flask-microservice/actions/workflows/cicd.yml)
-
----
-
 ## 📌 Project Overview
 
 This project is a **containerized Flask microservice** that demonstrates a complete DevOps lifecycle:
@@ -19,53 +13,43 @@ This project is a **containerized Flask microservice** that demonstrates a compl
 
 ---
 
-## 📸 Screenshots
+## 📋 Prerequisites
 
-### 🏗️ Architecture Overview
-
-| Component | Screenshot |
-|-----------|------------|
-| **GitHub Actions Pipeline** | ![GitHub Actions Pipeline](screenshots/github_actions_workflow.png) |
-| **Pipeline Success** | ![Pipeline Success](screenshots/github_actions_successfully_deploy.png) |
-| **Docker Containers on EC2** | ![Docker Containers on EC2](screenshots/docker_container_running_on_ec2.png) |
-| **Docker Images on Docker Hub** | ![Docker Images on Docker Hub](screenshots/docker_images_published_on_dockerhub.png) |
-| **CloudWatch Dashboard** | ![CloudWatch Dashboard](screenshots/cloudwatch_dashboard.png) |
-| **Git Tag Release** | ![Git Tag Release](screenshots/add_git_tag.png) |
+- Docker & Docker Compose (v24+)
+- Python 3.11+ (for local testing)
+- AWS account (for EC2 deployment)
+- GitHub account (for CI/CD)
 
 ---
 
-### 🐳 Local Development
+## 📡 API Endpoints
 
-| Step | Screenshot |
-|------|------------|
-| **Docker Compose Up** | ![Docker Compose Up](screenshots/successfully_test_run_local_docker_deploy.png) |
-| **Health Endpoint Test** | ![Health Endpoint Test](screenshots/test_requests_endpoint_health.png) |
-| **Items Endpoint Test** | ![Items Endpoint Test](screenshots/test_requests_endpoint_items.png) |
-| **POST Request Test** | ![POST Request Test](screenshots/test_requests_post.png) |
+| Method | Endpoint | Description |
+|--------|----------|------------|
+| GET | `/health` | Health check (app + DB status) |
+| GET | `/items` | List all items |
+| POST | `/items` | Create new item |
+| GET | `/items/<id>` | Fetch single item |
+| DELETE | `/items/<id>` | Delete item |
 
----
+### Example Requests
 
-### 🚀 EC2 Deployment
+**Health Check:**
+```bash
+curl http://localhost:5000/health
+```
 
-| Step | Screenshot |
-|------|------------|
-| **SSH into EC2** | ![SSH into EC2](screenshots/successfully_ssh_into_ec2_and_update_packages.png) |
-| **Docker Verified** | ![Docker Verified](screenshots/docker_verified.png) |
-| **Docker Official Signature** | ![Docker Official Signature](screenshots/add_docker_official_signature_to_server_trusted_list.png) |
-| **Install Dependencies** | ![Install Dependencies](screenshots/installing_curl_cacertificates_gnupg.png) |
-| **EC2 Instance Details** | ![EC2 Instance Details](screenshots/add_ec2.png) |
-| **IAM Role (CloudWatch)** | ![IAM Role](screenshots/add_ec2-cloudwatch-role.png) |
+**Create Item:**
+```bash
+curl -X POST http://localhost:5000/items \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My Item", "description": "..."}'
+```
 
----
-
-### 🌐 API Testing on EC2
-
-| Endpoint | Screenshot |
-|----------|------------|
-| **Health Endpoint** | ![Health Endpoint](screenshots/ec2_test_requests_endpoint_health.png) |
-| **Items Endpoint** | ![Items Endpoint](screenshots/ec2_test_requests_endpoint_items.png) |
-| **POST Request** | ![POST Request](screenshots/ec2_test_requests_post.png) |
-| **Browser View** | ![Browser View](screenshots/ec2_test_on_browser.png) |
+**List Items:**
+```bash
+curl http://localhost:5000/items
+```
 
 ---
 
@@ -165,8 +149,6 @@ flask-microservice/
 | **Trivy scan** | Identifies CVEs before deployment |
 | **Secrets via GitHub Secrets + EC2 `.env`** | No secrets in code or pipeline logs |
 
-![Docker Images on Docker Hub](screenshots/docker_images_published_on_dockerhub.png)
-
 ---
 
 ## 📊 Monitoring
@@ -183,70 +165,7 @@ A cron job runs `push_health_metric.py` every minute, pushing three custom metri
 
 ---
 
-## 🧪 Testing
-
-Run tests locally:
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run tests with coverage
-python -m pytest tests/ -v --cov=app --cov-report=term-missing
-```
-
-The pipeline enforces **≥80% test coverage**.
-
-![Local Docker Test](screenshots/successfully_test_run_local_docker_deploy.png)
-
----
-
-## 🐳 Local Development
-
-```bash
-# Start the app + PostgreSQL
-docker compose up --build -d
-
-# Test endpoints
-curl http://localhost:5000/health
-curl http://localhost:5000/items
-
-# Stop
-docker compose down
-```
-
-![Health Endpoint Test](screenshots/test_requests_endpoint_health.png)
-![Items Endpoint Test](screenshots/test_requests_endpoint_items.png)
-![POST Request Test](screenshots/test_requests_post.png)
-
----
-
-## 🚢 Production Deployment (CI/CD)
-
-1. Push to `main` → GitHub Actions runs the pipeline.
-2. The pipeline builds a Docker image and pushes it to Docker Hub.
-3. The deploy job copies `docker-compose.prod.yml` and scripts to EC2.
-4. `deploy.sh` pulls the new image, runs health checks, and rolls back on failure.
-
-**SSH into EC2 & Verify Docker:**
-![SSH into EC2](screenshots/successfully_ssh_into_ec2_and_update_packages.png)
-![Docker Verified](screenshots/docker_verified.png)
-
-**EC2 Instance & IAM Role:**
-![EC2 Instance Details](screenshots/add_ec2.png)
-![IAM Role](screenshots/add_ec2-cloudwatch-role.png)
-
-**API Testing on EC2:**
-![EC2 Health Endpoint](screenshots/ec2_test_requests_endpoint_health.png)
-![EC2 Items Endpoint](screenshots/ec2_test_requests_endpoint_items.png)
-![EC2 POST Request](screenshots/ec2_test_requests_post.png)
-![Browser View](screenshots/ec2_test_on_browser.png)
-
----
-
 ## 🏷️ Git Tagging & Versioned Releases
-
-Tagging a release:
 
 ```bash
 git tag -a v1.0.0 -m "Release v1.0.0 — initial microservice"
@@ -254,6 +173,48 @@ git push origin v1.0.0
 ```
 
 ![Git Tag Release](screenshots/add_git_tag.png)
+
+---
+
+## 🚀 Deploying to EC2
+
+### Prerequisites
+- ✅ EC2 instance running (Ubuntu 22.04 LTS+)
+- ✅ Security group allows SSH (port 22) and HTTP (port 80)
+- ✅ EC2 IAM role attached with CloudWatch permissions
+- ✅ GitHub Secrets configured: `EC2_HOST`, `EC2_USER`, `EC2_KEY`, `DOCKER_HUB_USERNAME`, `DOCKER_HUB_TOKEN`
+
+### Steps
+
+| Step | Screenshot |
+|------|------------|
+| **1. SSH into EC2 & update packages** | ![SSH into EC2](screenshots/successfully_ssh_into_ec2_and_update_packages.png) |
+| **2. Install curl, ca-certificates, gnupg** | ![Install Dependencies](screenshots/installing_curl_cacertificates_gnupg.png) |
+| **3. Add Docker official signature** | ![Docker Signature](screenshots/add_docker_official_signature_to_server_trusted_list.png) |
+| **4. Verify Docker installation** | ![Docker Verified](screenshots/docker_verified.png) |
+| **5. Add EC2 instance** | ![EC2 Instance](screenshots/add_ec2.png) |
+| **6. Attach IAM role for CloudWatch** | ![IAM Role](screenshots/add_ec2-cloudwatch-role.png) |
+
+### Deployment Flow
+1. Push to `main` → GitHub Actions pipeline triggers
+2. Pipeline runs: test → build → scan → deploy
+3. Deploy stage SSH's to EC2 and runs `deploy.sh`
+4. `deploy.sh` pulls latest image, stops old container, starts new one
+5. Health endpoint checked — automatic rollback on failure
+
+| | Screenshot |
+|-|------------|
+| **Containers running on EC2** | ![Docker Containers](screenshots/docker_container_running_on_ec2.png) |
+| **Images on Docker Hub** | ![Docker Hub](screenshots/docker_images_published_on_dockerhub.png) |
+
+### API Testing on EC2
+
+| Endpoint | Screenshot |
+|----------|------------|
+| **GET /health** | ![Health](screenshots/ec2_test_requests_endpoint_health.png) |
+| **GET /items** | ![Items](screenshots/ec2_test_requests_endpoint_items.png) |
+| **POST /items** | ![POST](screenshots/ec2_test_requests_post.png) |
+| **Browser** | ![Browser](screenshots/ec2_test_on_browser.png) |
 
 ---
 
@@ -486,3 +447,4 @@ def app():
 | **Cron + Logs** | Always redirect to a user-owned directory to avoid permission issues. |
 | **Read Error Logs** | Scroll to the bottom → find the exception → find YOUR code in the trace. |
 | **Conventional Commits** | `feat` = new feature; `chore` = maintenance. |
+
